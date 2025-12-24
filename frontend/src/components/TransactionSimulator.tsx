@@ -5,7 +5,7 @@ import { useTransactions } from '../context/TransactionContext'
 const TransactionSimulator = () => {
   const { addTransaction } = useTransactions()
   const [isSimulating, setIsSimulating] = useState(false)
-  const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null)
+  const [intervalId, setIntervalId] = useState<ReturnType<typeof setInterval> | null>(null)
 
   const merchants = [
     'Amazon', 'Walmart', 'Target', 'Starbucks', 'McDonald\'s',

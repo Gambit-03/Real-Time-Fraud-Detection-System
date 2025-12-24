@@ -38,7 +38,14 @@ interface TransactionProviderProps {
 export const TransactionProvider: React.FC<TransactionProviderProps> = ({ children }) => {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [fraudAlerts, setFraudAlerts] = useState<FraudAlert[]>([])
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<{
+    total_transactions: number
+    total_amount: number
+    fraud_count: number
+    high_risk_count: number
+    avg_risk_score: number
+    pending_alerts: number
+  }>({
     total_transactions: 0,
     total_amount: 0,
     fraud_count: 0,

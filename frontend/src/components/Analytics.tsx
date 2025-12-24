@@ -54,7 +54,7 @@ const Analytics = () => {
     }
   })
 
-  const alertTypeData = fraudAlerts.reduce((acc, a) => {
+  const alertTypeData = fraudAlerts.reduce((acc: Record<string, number>, a: { alert_type: string }) => {
     acc[a.alert_type] = (acc[a.alert_type] || 0) + 1
     return acc
   }, {} as Record<string, number>)
