@@ -57,8 +57,19 @@ class FraudDetector:
         # Extract features
         features = self._extract_features(transaction, user_profile)
 
-        # Base risk score starts low (most transactions are legitimate)
-        base_risk = random.uniform(5, 15)  # Base risk 5-15 for normal transactions
+        # Base risk score - balanced distribution for demo
+        # 60% low risk, 20% medium, 12% high, 5% critical, 3% fraud
+        rand = random.random()
+        if rand < 0.60:  # 60% low risk
+            base_risk = random.uniform(5, 30)
+        elif rand < 0.80:  # 20% medium risk
+            base_risk = random.uniform(30, 50)
+        elif rand < 0.92:  # 12% high risk
+            base_risk = random.uniform(50, 70)
+        elif rand < 0.97:  # 5% critical risk
+            base_risk = random.uniform(70, 85)
+        else:  # 3% fraud
+            base_risk = random.uniform(75, 95)
         risk_score = base_risk
 
         # Anomaly detection using Isolation Forest (only adds significant risk if truly anomalous)
@@ -68,28 +79,33 @@ class FraudDetector:
                 anomaly_prediction = self.isolation_forest.predict([features])[0]
                 
                 # Isolation Forest: -1 = anomaly, 1 = normal
-                # Only add significant risk if strongly anomalous
+                # Add risk if anomalous
                 if anomaly_prediction == -1:
                     # Convert anomaly score to risk (anomaly_score is typically negative for anomalies)
                     # More negative = more anomalous
-                    anomaly_risk = min(35, max(15, abs(anomaly_score) * 10))
+                    anomaly_risk = min(40, max(20, abs(anomaly_score) * 12))
                     risk_score += anomaly_risk
                     reasons.append("Transaction pattern deviates from normal behavior")
                     alert_type = "anomaly"
+                elif anomaly_score < -0.3:  # Somewhat anomalous but not flagged
+                    risk_score += random.uniform(10, 20)
+                    if risk_score > 40:
+                        reasons.append("Unusual transaction pattern detected")
             except Exception as e:
                 print(f"Error in Isolation Forest: {e}")
 
-        # Behavioral pattern analysis (more nuanced scoring)
+        # Behavioral pattern analysis (more sensitive for demo)
         if user_profile:
             behavioral_risk = self._check_behavioral_patterns(transaction, user_profile)
             risk_score += behavioral_risk['score']
             reasons.extend(behavioral_risk['reasons'])
-            if behavioral_risk['score'] > 0:
+            if behavioral_risk['score'] > 15:
                 alert_type = "behavioral"
         else:
-            # New user - slight increase but not too high
-            risk_score += random.uniform(5, 12)
-            if risk_score > 20:
+            # New user - moderate increase
+            new_user_risk = random.uniform(8, 18)
+            risk_score += new_user_risk
+            if risk_score > 25:
                 reasons.append("New user - limited transaction history")
 
         # Rule-based checks (conservative scoring)
@@ -121,15 +137,31 @@ class FraudDetector:
         # Normalize risk score to 0-100
         risk_score = min(100, max(0, risk_score))
 
-        # Realistic fraud threshold - only flag as fraud if truly suspicious
-        # In real banking, only ~0.1-0.5% of transactions are fraud
-        is_fraud = risk_score >= 75  # Higher threshold for actual fraud flag
+        # Fraud threshold - balanced for demo (3-5% fraud rate)
+        # Lower threshold to show some frauds for hackathon demo
+        is_fraud = risk_score >= 70  # Flag as fraud if risk >= 70
 
+        # Determine alert type based on risk score
+        if risk_score >= 70:
+            alert_type = "critical"
+        elif risk_score >= 50:
+            alert_type = "high_risk"
+        elif risk_score >= 30:
+            alert_type = "medium_risk"
+        else:
+            alert_type = "normal"
+        
+        # Add reasons for medium+ risk transactions
+        if risk_score < 30 and not reasons:
+            # For low risk, add a generic reason occasionally
+            if random.random() < 0.1:  # 10% chance
+                reasons = ["Transaction appears normal"]
+        
         return {
             'is_fraud': is_fraud,
             'risk_score': round(risk_score, 2),
-            'reasons': reasons if risk_score >= 40 else [],  # Only show reasons for medium+ risk
-            'alert_type': alert_type if risk_score >= 50 else "normal"
+            'reasons': reasons if risk_score >= 30 else [],  # Show reasons for medium+ risk
+            'alert_type': alert_type
         }
 
     def _extract_features(self, transaction: Dict, user_profile: Optional[Dict]) -> np.ndarray:
@@ -243,13 +275,16 @@ class FraudDetector:
         score = 0.0
         reasons = []
 
-        # Very large transaction (only flag extremely large amounts)
-        if transaction['amount'] > 20000:  # Increased threshold
-            score += 25
-            reasons.append("Very large transaction amount (>$20,000)")
-        elif transaction['amount'] > 10000:
-            score += 12
-            reasons.append("Large transaction amount (>$10,000)")
+        # Large transaction checks (more sensitive for demo)
+        if transaction['amount'] > 15000:  # Very large
+            score += 30
+            reasons.append("Very large transaction amount (>$15,000)")
+        elif transaction['amount'] > 8000:  # Large
+            score += 18
+            reasons.append("Large transaction amount (>$8,000)")
+        elif transaction['amount'] > 5000:  # Medium-large
+            score += 10
+            reasons.append("Above-average transaction amount (>$5,000)")
 
         # Negative or zero amount (shouldn't happen)
         if transaction['amount'] <= 0:

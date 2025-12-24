@@ -65,8 +65,9 @@ async def create_transaction(
     db.commit()
     db.refresh(db_transaction)
 
-    # Create fraud alert if detected (only for high risk, not medium)
-    if fraud_result['is_fraud'] or fraud_result['risk_score'] >= 60:
+    # Create fraud alert if detected (for high risk and fraud)
+    # Lower threshold for demo: >= 50 for high risk alerts
+    if fraud_result['is_fraud'] or fraud_result['risk_score'] >= 50:
         alert = FraudAlert(
             transaction_id=transaction.transaction_id,
             user_id=transaction.user_id,
