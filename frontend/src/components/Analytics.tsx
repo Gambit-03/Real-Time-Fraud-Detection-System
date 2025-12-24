@@ -16,7 +16,7 @@ import {
 } from 'recharts'
 
 const Analytics = () => {
-  const { transactions, fraudAlerts, stats } = useTransactions()
+  const { transactions, fraudAlerts } = useTransactions()
 
   // Prepare data for charts
   const riskDistribution = [
@@ -40,7 +40,6 @@ const Analytics = () => {
   const hourlyData = Array.from({ length: 24 }, (_, i) => {
     const hour = new Date()
     hour.setHours(hour.getHours() - (23 - i))
-    const hourStr = hour.toISOString().slice(0, 13) + ':00'
     return {
       hour: hour.getHours(),
       hourLabel: hour.getHours() + ':00',
@@ -79,8 +78,6 @@ const Analytics = () => {
     count: transactions.filter(t => t.amount >= range.min && t.amount < range.max).length,
   }))
 
-  const COLORS = ['#0066cc', '#dc3545', '#ff9800', '#10b981', '#8b5cf6']
-
   return (
     <div className="space-y-6">
       <div className="banking-card">
@@ -110,7 +107,7 @@ const Analytics = () => {
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                      label={({ name, percent }: { name: string; percent: number }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                       outerRadius={90}
                       fill="#8884d8"
                       dataKey="value"

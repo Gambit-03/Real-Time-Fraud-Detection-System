@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react'
 import Dashboard from './components/Dashboard'
 import { TransactionProvider } from './context/TransactionContext'
 import './App.css'

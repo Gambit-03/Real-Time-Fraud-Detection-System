@@ -7,7 +7,7 @@ import { useTransactions } from '../context/TransactionContext'
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState<'transactions' | 'alerts' | 'analytics'>('transactions')
-  const { transactions, fraudAlerts, stats } = useTransactions()
+  const { stats } = useTransactions()
 
   // Ensure stats has default values to prevent undefined errors
   const safeStats = {

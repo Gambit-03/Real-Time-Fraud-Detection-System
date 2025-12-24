@@ -6,12 +6,12 @@ interface TransactionContextType {
   transactions: Transaction[]
   fraudAlerts: FraudAlert[]
   stats: {
-    totalTransactions: number
-    totalAmount: number
-    fraudCount: number
-    highRiskCount: number
-    avgRiskScore: number
-    pendingAlerts: number
+    total_transactions: number
+    total_amount: number
+    fraud_count: number
+    high_risk_count: number
+    avg_risk_score: number
+    pending_alerts: number
   }
   addTransaction: (transaction: Transaction) => void
   addFraudAlert: (alert: FraudAlert) => void
@@ -39,14 +39,13 @@ export const TransactionProvider: React.FC<TransactionProviderProps> = ({ childr
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [fraudAlerts, setFraudAlerts] = useState<FraudAlert[]>([])
   const [stats, setStats] = useState({
-    totalTransactions: 0,
-    totalAmount: 0,
-    fraudCount: 0,
-    highRiskCount: 0,
-    avgRiskScore: 0,
-    pendingAlerts: 0,
+    total_transactions: 0,
+    total_amount: 0,
+    fraud_count: 0,
+    high_risk_count: 0,
+    avg_risk_score: 0,
+    pending_alerts: 0,
   })
-  const [socket, setSocket] = useState<WebSocket | null>(null)
 
   useEffect(() => {
     // Initialize WebSocket connection
@@ -80,7 +79,7 @@ export const TransactionProvider: React.FC<TransactionProviderProps> = ({ childr
       console.log('WebSocket disconnected')
     }
 
-    setSocket(newSocket)
+    // Socket stored in state but not used directly
 
     // Initial data load
     refreshTransactions()
@@ -125,6 +124,7 @@ export const TransactionProvider: React.FC<TransactionProviderProps> = ({ childr
   const refreshStats = async () => {
     try {
       const data = await transactionApi.getTransactionStats()
+      // API returns snake_case, which matches our state
       setStats(data)
     } catch (error) {
       console.error('Error fetching stats:', error)
