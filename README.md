@@ -51,10 +51,9 @@ See [QUICK_START.md](QUICK_START.md) for complete manual setup instructions.
 
 ## Documentation
 
-- **[QUICK_START.md](QUICK_START.md)** - Step-by-step setup guide ⭐ **START HERE**
+
 - **[SETUP.md](SETUP.md)** - Detailed setup instructions
-- **[DEMO_GUIDE.md](DEMO_GUIDE.md)** - Demo presentation guide
-- **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** - Complete project documentation
+
 
 ## Project Structure
 
