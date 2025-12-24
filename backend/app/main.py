@@ -34,7 +34,8 @@ app.add_middleware(
         "http://localhost:5173",
         "http://localhost:3000",
         "https://real-time-fraud-detection-system-p9pvtab5m.vercel.app",
-        "https://*.vercel.app"  # Allow all Vercel preview deployments
+        "https://*.vercel.app",  # Allow all Vercel preview deployments
+        "*"  # Allow all origins for now (for debugging)
     ],
     allow_credentials=True,
     allow_methods=["*"],
